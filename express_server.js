@@ -2,6 +2,9 @@ const express = require('express');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser')
+
+app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({extended: true}))
 
@@ -29,7 +32,8 @@ app.get('/', (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  res.render("urls_index", {urlDatabase: urlDatabase});
+  console.log(req.cookies['userCookie'])
+  res.render("urls_index", {urlDatabase: urlDatabase, username: req.cookies['userCookie']});
 });
 
 //NEW ROUTE
@@ -81,15 +85,12 @@ app.post("/urls/:id", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 })
 
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
-})
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+//COOKIE ROUTE
+app.post("/login", (req, res) => {
+  res.cookie('userCookie', req.body['username']);
+  console.log(req.body['username'])
+  res.redirect("/urls");
 });
-
-
 
 
 
