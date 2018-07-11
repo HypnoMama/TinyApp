@@ -32,7 +32,6 @@ app.get('/', (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  console.log(req.cookies['userCookie'])
   res.render("urls_index", {urlDatabase: urlDatabase, username: req.cookies['userCookie']});
 });
 
@@ -89,9 +88,15 @@ app.post("/urls/:id", (req, res) => {
 //COOKIE ROUTE
 app.post("/login", (req, res) => {
   res.cookie('userCookie', req.body['username']);
-  console.log(req.body['username'])
+
   res.redirect("/urls");
 });
+
+//logout
+app.post("/logout", (req, res) => {
+  res.clearCookie('userCookie')
+  res.redirect('/urls');
+})
 
 
 
