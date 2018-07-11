@@ -1,0 +1,13 @@
+<%include partials/_header%>
+  <div>
+    <ul>
+      <% for (var key in urlDatabase) {%>
+            <li><%= key + ": " + urlDatabase[key] %></li>
+
+      <%} %>
+    </ul>
+    <a href="">shorten the url</a>
+  </div>
+
+<%include partials/_footer%>
+
