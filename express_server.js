@@ -38,7 +38,8 @@ app.get("/urls", (req, res) => {
 
 //NEW ROUTE
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let username = req.cookies['userCookie'];
+  res.render("urls_new", {username: username});
 });
 
 //CREATE ROUTE
@@ -59,7 +60,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 //SHOW ROUTE
 app.get("/urls/:id", (req, res) => {
-  res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase} )
+  res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, username: req.cookies['userCookie']} )
 });
 
 //DELETE ROUTE
