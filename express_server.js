@@ -67,9 +67,10 @@ app.post('/urls/:id/delete', (req, res) => {
 });
 
 //Edit Route
-// app.get("/urls/:id/edit", (req, res) => {
-//   res.redirect('/urls/:id')
-// })
+app.get("/urls/:id/edit", (req, res) => {
+  let shortURL = req.params.id;
+  res.redirect(`/urls/<%=${shortURL}`)
+})
 
 //UPDATE ROUTE
 app.post("/urls/:id", (req, res) => {
