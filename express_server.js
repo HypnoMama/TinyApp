@@ -46,6 +46,12 @@ app.post("/urls", (req, res) => {
 
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  let shortURL = req.params.shortURL
+  let longURL = urlDatabase[shortURL]
+  res.redirect(longURL);
+});
+
 
 //SHOW ROUTE
 app.get("/urls/:id", (req, res) => {
