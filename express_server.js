@@ -80,7 +80,6 @@ app.get("/urls/:id/edit", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
   let longURL = req.body.longURL;
-  console.log(longURL)
   urlDatabase[shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
 })
