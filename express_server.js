@@ -39,8 +39,11 @@ app.get("/urls/new", (req, res) => {
 
 //CREATE ROUTE
 app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.send("OKAY")
+  let longURL = req.body.longURL;
+  let shortURL = generateRandomString();
+  urlDatabase[shortURL] = longURL
+  res.redirect("urls/");
+
 });
 
 
