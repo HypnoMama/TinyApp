@@ -2,11 +2,16 @@
   <div>
     <ul>
       <% for (var key in urlDatabase) {%>
-            <li><%= key + ": " + urlDatabase[key] %></li>
-
+            <li><%= key + ": ----->" %><a href="<%=urlDatabase[key] %>"><%= urlDatabase[key]%></a></li>
+            <form method="POST" action="/urls/<%=key%>/delete">
+              <a href="/urls/<%=key%>">Edit</a>
+              <button>Delete</button>
+            </form>
+            <br>
+            <br>
       <%} %>
     </ul>
-    <a href="">shorten the url</a>
+    <a href="/urls/new">shorten the url</a>
   </div>
 
 <%include partials/_footer%>
