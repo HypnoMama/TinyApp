@@ -22,6 +22,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+
 //INDEX ROUTE
 app.get('/', (req, res) => {
   res.end("Hello!");
@@ -41,8 +42,8 @@ app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL
-  res.redirect(`urls/${shortURL}`);
-
+  res.redirect('/urls/' + shortURL);
+// `urls/${shortURL}`
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -55,15 +56,29 @@ app.get("/u/:shortURL", (req, res) => {
 //SHOW ROUTE
 app.get("/urls/:id", (req, res) => {
   res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase} )
-
 });
 
+//DELETE ROUTE
 app.post('/urls/:id/delete', (req, res) => {
   let shortURL = req.params.id;
   console.log(shortURL);
   delete urlDatabase[shortURL];
   res.redirect('/urls');
 });
+
+//Edit Route
+// app.get("/urls/:id/edit", (req, res) => {
+//   res.redirect('/urls/:id')
+// })
+
+//UPDATE ROUTE
+app.post("/urls/:id", (req, res) => {
+  let shortURL = req.params.id;
+  let longURL = req.body.longURL;
+  console.log(longURL)
+  urlDatabase[shortURL] = longURL;
+  res.redirect(`/urls/${shortURL}`);
+})
 
 app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
