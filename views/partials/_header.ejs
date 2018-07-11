@@ -5,9 +5,12 @@
 </head>
 <body>
   <h1>This is the header!</h1>
-  <form>
+  <form action="/login" method="POST">
     <label>Enter a Username: </label>
-    <input type="text" name="username" placeholder="username">
+    <input  type="text" name="username" placeholder="username">
     <input type="submit">
   </form>
+  <div>
+    <h1>Welcome <%=username%> you are the cookie cooker extraordinaire!!!!</h1>
+  </div>
 
