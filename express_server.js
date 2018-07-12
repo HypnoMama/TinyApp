@@ -25,15 +25,46 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@userexample",
+    password: "purple-monkey-dishwasher"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasker-funk"
+  }
+}
+
+//keep track of how many times the links are clicked on
+const clickedOnLinks = 0;
+
 
 //INDEX ROUTE
 app.get('/', (req, res) => {
-  res.end("Hello!");
+  res.redirect("/urls");
 });
+
+//login page
+app.get("/register", (req, res) => {
+  res.render("registration");
+})
+
+//gets login info
+app.post("/register", (req, res) => {
+  let password = req.body.password;
+  let name = req.body.email;
+  res.redirect("/urls");
+})
+
 
 app.get("/urls", (req, res) => {
   res.render("urls_index", {urlDatabase: urlDatabase, username: req.cookies['userCookie']});
 });
+
+
 
 //NEW ROUTE
 app.get("/urls/new", (req, res) => {
@@ -50,9 +81,11 @@ app.post("/urls", (req, res) => {
 // `urls/${shortURL}`
 });
 
+//Redirects to the longURL when the short URL is clicked on
 app.get("/u/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL
   let longURL = urlDatabase[shortURL]
+  clickedOnLinks += 1;
   res.redirect(longURL);
 });
 
