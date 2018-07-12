@@ -74,7 +74,6 @@ app.post("/register", (req, res) => {
 app.get("/urls", (req, res) => {
   let userID = req.cookies['user_id']
   let userEmail = users[userID].email
-  console.log(userEmail)
   res.render("urls_index", {urlDatabase: urlDatabase, username: userEmail});
 });
 
@@ -84,7 +83,6 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   let userID = req.cookies['user_id'];
   userEmail = users[userID].email
-  console.log(userID)
   res.render("urls_new", {username: userEmail});
 });
 
@@ -110,14 +108,12 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let userID = req.cookies['user_id']
   let userEmail = users[userID].email
-  console.log(userEmail)
   res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, username: userEmail} )
 });
 
 //DELETE ROUTE
 app.post('/urls/:id/delete', (req, res) => {
   let shortURL = req.params.id;
-  console.log(shortURL);
   delete urlDatabase[shortURL];
   res.redirect('/urls');
 });
@@ -140,7 +136,7 @@ app.post("/urls/:id", (req, res) => {
 app.get("/login", (req, res) => {
   res.render("login", );
 })
-// {username: email}
+
 
 //COOKIE ROUTE
 app.post("/login", (req, res) => {
