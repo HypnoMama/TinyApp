@@ -136,15 +136,38 @@ app.post("/urls/:id", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 })
 
+
+app.get("/login", (req, res) => {
+  res.render("login", );
+})
+// {username: email}
+
 //COOKIE ROUTE
 app.post("/login", (req, res) => {
-  // res.cookie('userCookie', req.body['username']);
+  let password = req.body.password
+  let email = req.body.email
+  if (email === '' || password === '') {
+    return res.send('400 bad request')
+  }
+
+  for (person in users) {
+    if (users[person].email === email && users[person].password === password) {
+      res.cookie("user_id", users[person].id);
+      res.redirect("/");
+    } else {
+      return res.send("403: Forbidden")
+    }
+  }
+
+
+
+  res.cookie('user_id', req.body['username']);
   res.redirect("/urls");
 });
 
 //logout
 app.post("/logout", (req, res) => {
-  res.clearCookie('userCookie')
+  res.clearCookie('user_id')
   res.redirect('/urls');
 })
 
