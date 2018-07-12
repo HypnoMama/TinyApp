@@ -10,7 +10,12 @@
 
                   <% for (let urls in userURLS) { %>
                     <li><%= `${urls}----->`%><a href="<%=userURLS[urls]%>"><%=`${userURLS[urls]}`%></a></li>
-
+                    <form method="POST" action="/urls/<%=urls%>/delete">
+                      <a name="clicked" href="/urls/<%=urls%>">Edit</a>
+                      <button>Delete</button>
+                    </form>
+                    <br>
+                    <br>
                   <% } %>
             <% } %>
 
