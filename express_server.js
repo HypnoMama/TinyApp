@@ -82,7 +82,7 @@ app.get("/urls", (req, res) => {
 //NEW ROUTE
 app.get("/urls/new", (req, res) => {
   let userID = req.cookies['user_id'];
-  userEmail = users[userID].email
+  let userEmail = users[userID].email
   res.render("urls_new", {username: userEmail});
 });
 
@@ -134,6 +134,7 @@ app.post("/urls/:id", (req, res) => {
 
 
 app.get("/login", (req, res) => {
+  console.log(users)
   res.render("login", );
 })
 
@@ -147,24 +148,24 @@ app.post("/login", (req, res) => {
   }
 
   for (person in users) {
-    if (users[person].email === email && users[person].password === password) {
-      res.cookie("user_id", users[person].id);
-      res.redirect("/");
-    } else {
-      return res.send("403: Forbidden")
+
+    if (users[person].email === email) {
+      break;
+    if (users[person].email !== email){
+      return res.send("403: Forbidden");
     }
   }
+}
 
+  res.cookie("user_id", users[person].id);
+  return res.redirect("/");
 
-
-  res.cookie('user_id', req.body['username']);
-  res.redirect("/urls");
 });
 
 //logout
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id')
-  res.redirect('/urls');
+  res.redirect('/login');
 })
 
 
