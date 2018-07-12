@@ -72,15 +72,20 @@ app.post("/register", (req, res) => {
 
 
 app.get("/urls", (req, res) => {
-  res.render("urls_index", {urlDatabase: urlDatabase, username: req.cookies['userCookie']});
+  let userID = req.cookies['user_id']
+  let userEmail = users[userID].email
+  console.log(userEmail)
+  res.render("urls_index", {urlDatabase: urlDatabase, username: userEmail});
 });
 
 
 
 //NEW ROUTE
 app.get("/urls/new", (req, res) => {
-  let username = req.cookies['userCookie'];
-  res.render("urls_new", {username: username});
+  let userID = req.cookies['user_id'];
+  userEmail = users[userID].email
+  console.log(userID)
+  res.render("urls_new", {username: userEmail});
 });
 
 //CREATE ROUTE
@@ -103,7 +108,10 @@ app.get("/u/:shortURL", (req, res) => {
 
 //SHOW ROUTE
 app.get("/urls/:id", (req, res) => {
-  res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, username: req.cookies['userCookie']} )
+  let userID = req.cookies['user_id']
+  let userEmail = users[userID].email
+  console.log(userEmail)
+  res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, username: userEmail} )
 });
 
 //DELETE ROUTE
@@ -130,7 +138,7 @@ app.post("/urls/:id", (req, res) => {
 
 //COOKIE ROUTE
 app.post("/login", (req, res) => {
-  res.cookie('userCookie', req.body['username']);
+  // res.cookie('userCookie', req.body['username']);
   res.redirect("/urls");
 });
 
