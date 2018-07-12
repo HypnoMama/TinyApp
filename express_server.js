@@ -13,10 +13,8 @@ app.set("view engine", "ejs");
 function generateRandomString() {
   let rand = "";
   let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
   for (let i = 0; i < 6; i++)
     rand += possible.charAt(Math.floor(Math.random() * possible.length));
-
   return rand;
 }
 
@@ -47,15 +45,17 @@ app.get('/', (req, res) => {
   res.redirect("/urls");
 });
 
-//login page
+//register page
 app.get("/register", (req, res) => {
   res.render("registration");
 })
 
-//gets login info
+//gets registration info and adds to users object
 app.post("/register", (req, res) => {
-  let password = req.body.password;
-  let name = req.body.email;
+ let password = req.body.password
+ let email = req.body.email
+ let randomID = generateRandomString();
+ users[randomID] = {randomID, email, password}
   res.redirect("/urls");
 })
 
