@@ -5,24 +5,7 @@
 </head>
 <body>
   <h1>This is the header!</h1>
-  <%if (!username) {%>
-    <form action="/login" method="POST">
-      <label>Enter a Username: </label>
-      <input  type="text" name="username" placeholder="username">
-      <input type="submit">
-    </form>
 
-    <a href="/register">Click here to sign up!</a>
-
-   <%} else {%>
-      <form action="/logout" method="POST">
-        <label>Logout</label>
-        <input type="submit" value="Logout">
-      </form>
-      <div>
-      <h1>Welcome <%=username%> you are the cookie cooker extraordinaire!!!!</h1>
-      </div>
-    <%}%>
 
 
 
