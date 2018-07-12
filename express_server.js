@@ -55,10 +55,19 @@ app.post("/register", (req, res) => {
   let password = req.body.password
   let email = req.body.email
   let id = generateRandomString();
+  if (email === '' || password === '') {
+    return res.send('400 bad request')
+  }
+  for (person in users) {
+    if (users[person].email === email) {
+      return res.send("Bad request: 400")
+    }
+  }
   users[id] = {id, email, password};
-  console.log(users);
+  console.log(users)
   res.cookie("user_id", users[id].id);
   res.redirect("/urls");
+
 })
 
 
