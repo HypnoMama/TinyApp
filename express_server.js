@@ -82,8 +82,13 @@ app.get("/urls", (req, res) => {
 //NEW ROUTE
 app.get("/urls/new", (req, res) => {
   let userID = req.cookies['user_id'];
-  let userEmail = users[userID].email
-  res.render("urls_new", {username: userEmail});
+  if (!userID) {
+    return res.redirect("/login");
+  } else {
+    let userEmail = users[userID].email
+    res.render("urls_new", {username: userEmail});
+  }
+
 });
 
 //CREATE ROUTE
