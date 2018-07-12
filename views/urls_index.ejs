@@ -9,7 +9,7 @@
             <% if (ids === userID) { %> <!--if the id is equal to the userID -->
 
                   <% for (let urls in userURLS) { %>
-                    <li><%= `${urls}:  ${userURLS[urls]}`%></li>
+                    <li><%= `${urls}----->`%><a href="<%=userURLS[urls]%>"><%=`${userURLS[urls]}`%></a></li>
 
                   <% } %>
             <% } %>
