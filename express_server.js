@@ -52,13 +52,12 @@ app.get("/register", (req, res) => {
 
 //gets registration info and adds to users object
 app.post("/register", (req, res) => {
-
   let password = req.body.password
   let email = req.body.email
   let id = generateRandomString();
   users[id] = {id, email, password};
   console.log(users);
-  res.cookie("user_id", users[id]);
+  res.cookie("user_id", users[id].id);
   res.redirect("/urls");
 })
 
