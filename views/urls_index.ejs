@@ -1,15 +1,20 @@
 <%include partials/_header%>
   <div>
+
+    <h2>My URLS:</h2>
     <ul>
-      <% for (var key in urlDatabase) {%>
-            <li><%= key + ": ----->" %><a href="<%=urlDatabase[key] %>"><%= urlDatabase[key]%></a></li>
-            <form method="POST" action="/urls/<%=key%>/delete">
-              <a name="clicked" href="/urls/<%=key%>">Edit</a>
-              <button>Delete</button>
-            </form>
-            <br>
-            <br>
-      <%} %>
+
+      <% for (let ids in urlDatabase) { %>
+      <!--for the id strings in the database -->
+            <% if (ids === userID) { %> <!--if the id is equal to the userID -->
+
+                  <% for (let urls in userURLS) { %>
+                    <li><%= `${urls}:  ${userURLS[urls]}`%></li>
+
+                  <% } %>
+            <% } %>
+
+      <% } %>
     </ul>
     <a href="/urls/new">Make a new Tiny URL</a>
   </div>
