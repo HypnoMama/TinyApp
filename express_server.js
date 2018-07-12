@@ -19,9 +19,14 @@ function generateRandomString() {
 }
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "userRandomID": {
+    "b2xVn2": "http://www.lighthouselabs.ca"
+  },
+  "user2RandomID": {
+    "9sm5xK": "http://www.google.com"
+  }
 };
+
 
 const users = {
   "userRandomID": {
@@ -70,11 +75,16 @@ app.post("/register", (req, res) => {
 
 })
 
-
+//INDEX ROUTE
 app.get("/urls", (req, res) => {
   let userID = req.cookies['user_id']
-  let userEmail = users[userID].email
-  res.render("urls_index", {urlDatabase: urlDatabase, username: userEmail});
+  if (!userID) {
+    return res.redirect("/login");
+  } else {
+    let userEmail = users[userID].email
+    let userURLS = urlDatabase[userID]
+    res.render("urls_index", {urlDatabase: urlDatabase, userID: userID, userURLS: userURLS});
+  }
 });
 
 
