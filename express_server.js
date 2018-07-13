@@ -76,6 +76,7 @@ app.post("/register", (req, res) => {
     }
   }
   users[id] = {id, email, hashedPassword};
+  urlDatabase[id] = {};
   // req.session.user_id = users[person].id;
   req.session.user_id = users[id].id;
   res.redirect("/urls");
@@ -114,6 +115,7 @@ app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   console.log("longURL: " + longURL)
   let shortURL = generateRandomString();
+  console.log(userID.userEmail);
   urlDatabase[userID][shortURL] = longURL;
   console.log("added to database: "+ shortURL +urlDatabase[userID].shortURL)
   res.redirect('/urls/' + shortURL);
@@ -168,14 +170,15 @@ app.get("/urls/:id", (req, res) => {
 
 //DELETE ROUTE
 app.post('/urls/:id/delete', (req, res) => {
+  let userID = req.session.user_id;
   let shortURL = req.params.id;
-  delete urlDatabase[shortURL];
+  delete urlDatabase[userID][shortURL];
   res.redirect('/urls');
 });
 
 //Edit Route
 app.get("/urls/:id/edit", (req, res) => {
-  let userID = req.session.user_id
+  let userID = req.session.user_id;
   let shortURL = req.params.id;
   if (!userID){
     return res.redirect("/login");
@@ -188,9 +191,10 @@ app.get("/urls/:id/edit", (req, res) => {
 
 //UPDATE ROUTE
 app.post("/urls/:id", (req, res) => {
+  let userID = req.session.user_id;
   let shortURL = req.params.id;
   let longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[userID][shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
 })
 
@@ -203,14 +207,16 @@ app.get("/login", (req, res) => {
 
 //COOKIE ROUTE
 app.post("/login", (req, res) => {
-  const password = req.body.password;
+  const logInPassword = req.body.password;
   const email = req.body.email;
   const hashedPassword = bcrypt.hashSync(password, 10)
   if (email === '' || password === '') {
     return res.send('400 bad request')
   }
   for (person in users) {
-    if (users[person].email === email && bcrypt.compareSync(password, hashedPassword)) {
+    const userPass = users[person].password
+    console.log(bcrypt.compareSync(userPass, hashedPassword))
+    if (users[person].email === email && bcrypt.compareSync(userPass, hashedPassword)) {
       break;
     }
     if (users[person].email !== email){
@@ -225,7 +231,7 @@ app.post("/login", (req, res) => {
 
 //logout
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id')
+  req.session = null;
   res.redirect('/login');
 })
 
