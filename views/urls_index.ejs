@@ -1,5 +1,5 @@
 <%include partials/_header%>
-  <div>
+  <div class="container">
 
     <h2>My URLS:</h2>
     <ul>
@@ -13,9 +13,9 @@
                       <a href="<%=userURLS[urls]%>">http://localhost:8080/u/<%=urls%></a>
                       ----->
                     <a href="<%=userURLS[urls]%>"><%=userURLS[urls]%></a></li>
-                    <form method="POST" action="/urls/<%=urls%>/delete">
-                      <a name="clicked" href="/urls/<%=urls%>">Edit</a>
-                      <button>Delete</button>
+                    <form method="POST" action="/urls/<%=urls%>>/delete">
+                      <a class="btn btn-info btn-small" name="clicked" href="/urls/<%=urls%>">Edit</a>
+                      <button class="btn btn-primary btn-small"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete </button>
                     </form>
                     <br>
                     <br>
@@ -24,7 +24,7 @@
 
       <% } %>
     </ul>
-    <a href="/urls/new">Make a new Tiny URL</a>
+    <p><a class="btn btn-success btn-md" href="/urls/new">Make a new Tiny URL</a></p>
   </div>
 
 <%include partials/_footer%>

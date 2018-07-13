@@ -5,11 +5,11 @@
     <li> <%= `${shortURL}:  ${urlDatabase[userID][shortURL]}` %></li>
   </ul>
 
-  <a href="/urls">Back To My URLS</a>
+  <a class="btn btn-primary btn-md"href="/urls">Back To My URLS</a>
 
     <form method="POST">
       <label for="longURL">Update your URL: </label>
-      <input id="longURL" type="text" name="longURL" value="<%=urlDatabase[shortURL]%>">
+      <input id="longURL" type="text" name="longURL" value="<%=urlDatabase[userID][shortURL]%>">
       <input type="submit" value="UPDATE!">
     </form>
 
