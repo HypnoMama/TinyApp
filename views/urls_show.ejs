@@ -1,19 +1,20 @@
  <%include partials/_header%>
- <div>
+ <div class="container">
+  <div>
+    <ul>
+      <li><a href="<%=shortURL%>">http://localhost:8080/u/<%=shortURL%></a>------>   <a href="<%=urlDatabase[userID][shortURL]%>"><%=urlDatabase[userID][shortURL]%></a></li>
+    </ul>
 
-  <ul>
-    <li> <%= `${shortURL}:  ${urlDatabase[userID][shortURL]}` %></li>
-  </ul>
+    <a class="btn btn-success btn-md"href="/urls">Back To My URLS</a>
 
-  <a class="btn btn-primary btn-md"href="/urls">Back To My URLS</a>
-
-    <form method="POST">
-      <label for="longURL">Update your URL: </label>
-      <input id="longURL" type="text" name="longURL" value="<%=urlDatabase[userID][shortURL]%>">
-      <input type="submit" value="UPDATE!">
-    </form>
-
-
+    <div style="margin: 20px;">
+      <form method="POST">
+        <label for="longURL">Update your URL: </label>
+        <input id="longURL" type="text" name="longURL" value="<%=urlDatabase[userID][shortURL]%>">
+        <input type="submit" value="UPDATE!">
+      </form>
+    </div>
+  </div>
   </div>
 
 
