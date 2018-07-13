@@ -72,7 +72,7 @@ app.post("/register", (req, res) => {
   let email = req.body.email;
   let id = generateRandomString();
   if (email === '' || password === '') {
-    return res.send('400 bad request')
+    return res.send('Bad request: 400');
   }
   for (person in users) {
     if (users[person].email === email) {
@@ -95,12 +95,11 @@ app.get("/urls", (req, res) => {
   // } //this is the value of linkUsed
   // console.log(linkUsed);
   if (notLoggedIn(userID)) {
-    return res.redirect("/login");
+    return res.render("error401", {userID: userID});
   }else {
     let userEmail = users[userID].email;
     let userURLS = urlDatabase[userID];
     res.render("urls_index", {urlDatabase: urlDatabase, userID: userID, userURLS: userURLS, userEmail: userEmail});
-
   }
 });
 
@@ -109,7 +108,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   let userID = req.session.user_id;
   if(notLoggedIn(userID)) {
-    return res.redirect("/login");
+    return res.render("error401", {userID: userID});
   }
   let userEmail = users[userID].email;
   res.render("urls_new", {userID: userID, userEmail: userEmail});
@@ -152,7 +151,7 @@ app.get("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
   // let linkUsed = urlDatabase[userID].linkUsed;
   if (notLoggedIn(userID)) {
-    return res.redirect('/login');
+    return res.render('error403', {userID: userID});
   }
   let userEmail = users[userID].email;
   for (url in urlDatabase[userID]) {
@@ -161,6 +160,7 @@ app.get("/urls/:id", (req, res) => {
       return res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, userID: userID, userEmail: userEmail} );
     }
   }
+
 });
 
 
@@ -168,7 +168,9 @@ app.get("/urls/:id", (req, res) => {
 app.get("/urls/:id/edit", (req, res) => {
   let userID = req.session.user_id;
   let shortURL = req.params.id;
-  notLoggedIn(userID);
+  if (notLoggedIn(userID)) {
+    return res.render("error403", {userID: userID});
+  };
   if (shortURL !== urlDatabase[userID].shortURL) {
     return res.send("This is not your URL");
   }
