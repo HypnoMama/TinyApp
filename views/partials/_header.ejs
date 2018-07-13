@@ -7,12 +7,14 @@
 </head>
 <body>
 
-  <div class="jumbotron">
+  <div style="margin: 40px;"   class="jumbotron">
 
       <% if (!userID) { %>
         <div class="container">
-          <p><a class="btn btn-primary btn-lg" href="/login" role="button">Click here to log in!</a></p>
-          <p><a class="btn btn-primary btn-lg" href="/register">Click here to sign up!</a></p>
+          <h1>Hello and Welcome to Tiny App!</h1>
+          <h2>Please Log in or Sign up</h2>
+          <p><a class="btn btn-success btn-lg" href="/login" role="button">Click here to log in!</a></p>
+          <p><a class="btn btn-info btn-lg" href="/register">Click here to sign up!</a></p>
         </div>
       <% } else { %>
           <h1 style="color: darkblue;">Hello <%= userEmail %>!  Let's make some Tiny URLs today!</h1>
@@ -23,11 +25,7 @@
         </div>
         <% } %>
 
-    </div>
+
   </div>
 
 
-
-
-  <!-- if the user is logged in don't display -->
-  <!-- if not logged in, display -->
