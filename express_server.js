@@ -10,13 +10,6 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 app.set("view engine", "ejs");
 
-function generateRandomString() {
-  let rand = "";
-  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 6; i++)
-    rand += possible.charAt(Math.floor(Math.random() * possible.length));
-  return rand;
-}
 
 const urlDatabase = {
   "userRandomID": {
@@ -32,7 +25,7 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@userexample",
-    password: "purple-monkey-dishwasher"
+    password: "test"
   },
   "user2RandomID": {
     id: "user2RandomID",
@@ -43,6 +36,20 @@ const users = {
 
 //keep track of how many times the links are clicked on
 const clickedOnLinks = 0;
+
+function generateRandomString() {
+  let rand = "";
+  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < 6; i++)
+    rand += possible.charAt(Math.floor(Math.random() * possible.length));
+  return rand;
+}
+
+// function checkUserLoggedIn() {
+
+// }
+
+
 
 
 //INDEX ROUTE
@@ -69,7 +76,6 @@ app.post("/register", (req, res) => {
     }
   }
   users[id] = {id, email, password};
-  console.log(users)
   res.cookie("user_id", users[id].id);
   res.redirect("/urls");
 
@@ -83,7 +89,7 @@ app.get("/urls", (req, res) => {
   } else {
     let userEmail = users[userID].email
     let userURLS = urlDatabase[userID]
-    res.render("urls_index", {urlDatabase: urlDatabase, userID: userID, userURLS: userURLS});
+    res.render("urls_index", {urlDatabase: urlDatabase, userID: userID, userURLS: userURLS, userEmail: userEmail});
   }
 });
 
@@ -96,7 +102,7 @@ app.get("/urls/new", (req, res) => {
     return res.redirect("/login");
   } else {
     let userEmail = users[userID].email
-    res.render("urls_new", {username: userEmail});
+    res.render("urls_new", {username: userEmail, userID: userID});
   }
 
 });
@@ -112,18 +118,39 @@ app.post("/urls", (req, res) => {
 
 //Redirects to the longURL when the short URL is clicked on
 app.get("/u/:shortURL", (req, res) => {
-  let shortURL = req.params.shortURL
-  let longURL = urlDatabase[shortURL]
-  clickedOnLinks += 1;
-  res.redirect(longURL);
-});
+  let shortURL = req.params.shortURL //b2xVn2
+
+  for (id in urlDatabase) {
+    for (url in urlDatabase[id]){
+      console.log(url)
+      if (url !== shortURL){
+        continue;
+      }else {
+        let longURL = urlDatabase[id][url];
+        res.redirect(longURL);
+      }
+    }
+  }
+
+    // clickedOnLinks += 1;
+    // console.log(clickedOnLinks)
+
+  });
 
 
 //SHOW ROUTE
 app.get("/urls/:id", (req, res) => {
   let userID = req.cookies['user_id']
+  let shortURL = req.params.id;
+  if (!userID){
+    return res.redirect("/login");
+  }
+  if (shortURL !== urlDatabase[userID].shortURL) {
+    return res.send("This is not your URL");
+  }
   let userEmail = users[userID].email
   res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, username: userEmail} )
+
 });
 
 //DELETE ROUTE
@@ -135,7 +162,14 @@ app.post('/urls/:id/delete', (req, res) => {
 
 //Edit Route
 app.get("/urls/:id/edit", (req, res) => {
+  let userID = req.cookies['user_id']
   let shortURL = req.params.id;
+  if (!userID){
+    return res.redirect("/login");
+  }
+  if (shortURL !== urlDatabase[userID].shortURL) {
+    return res.send("This is not your URL")
+  }
   res.redirect(`/urls/<%=${shortURL}`)
 })
 
@@ -161,16 +195,15 @@ app.post("/login", (req, res) => {
   if (email === '' || password === '') {
     return res.send('400 bad request')
   }
-
   for (person in users) {
-
     if (users[person].email === email) {
       break;
+    }
     if (users[person].email !== email){
       return res.send("403: Forbidden");
+
     }
   }
-}
 
   res.cookie("user_id", users[person].id);
   return res.redirect("/");
