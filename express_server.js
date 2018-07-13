@@ -11,7 +11,7 @@ app.use(cookieSession({
   keys: ['user_id']
 }));
 
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
 
@@ -40,7 +40,7 @@ const users = {
 }
 
 //keep track of how many times the links are clicked on
-const clickedOnLinks = 0;
+const linksUsed = 0;
 
 function generateRandomString() {
   let rand = "";
@@ -63,10 +63,9 @@ app.get("/register", (req, res) => {
 
 //gets registration info and adds to users object
 app.post("/register", (req, res) => {
-  const logInPassword = req.body.password
+  const logInPassword = req.body.password;
   const password = bcrypt.hashSync(logInPassword, 10);
-  console.log(password);
-  let email = req.body.email
+  let email = req.body.email;
   let id = generateRandomString();
   if (email === '' || password === '') {
     return res.send('400 bad request')
@@ -78,7 +77,6 @@ app.post("/register", (req, res) => {
   }
   users[id] = {id, email, password};
   urlDatabase[id] = {};
-  // req.session.user_id = users[person].id;
   req.session.user_id = users[id].id;
   res.redirect("/urls");
 
@@ -90,8 +88,8 @@ app.get("/urls", (req, res) => {
   if (!userID) {
     return res.redirect("/login");
   } else {
-    let userEmail = users[userID].email
-    let userURLS = urlDatabase[userID]
+    let userEmail = users[userID].email;
+    let userURLS = urlDatabase[userID];
     res.render("urls_index", {urlDatabase: urlDatabase, userID: userID, userURLS: userURLS, userEmail: userEmail});
   }
 });
@@ -104,7 +102,7 @@ app.get("/urls/new", (req, res) => {
   if (!userID) {
     return res.redirect("/login");
   } else {
-    let userEmail = users[userID].email
+    let userEmail = users[userID].email;
     res.render("urls_new", {username: userEmail, userID: userID});
   }
 
@@ -114,59 +112,44 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   let userID = req.session.user_id
   let longURL = req.body.longURL;
-  console.log("longURL: " + longURL)
   let shortURL = generateRandomString();
-  console.log(userID.userEmail);
   urlDatabase[userID][shortURL] = longURL;
-  console.log("added to database: "+ shortURL +urlDatabase[userID].shortURL)
-  res.redirect('/urls/' + shortURL);
-// `urls/${shortURL}`
+  res.redirect(`urls/${shortURL}`);
 });
 
-//Redirects to the longURL when the short URL is clicked on
+//Redirects to the longURL when the short URL is visited
 app.get("/u/:shortURL", (req, res) => {
-  let shortURL = req.params.shortURL //b2xVn2
-
+  let shortURL = req.params.shortURL;
   for (id in urlDatabase) {
-    for (url in urlDatabase[id]){
-      console.log(url)
-      if (url !== shortURL){
+    for (url in urlDatabase[id]) {
+      if (url !== shortURL) {
         continue;
-      }else {
+      } else {
         let longURL = urlDatabase[id][url];
+        linksUsed += 1;
+        console.log(linksUsed);
         res.redirect(longURL);
       }
     }
   }
-
-    // clickedOnLinks += 1;
-    // console.log(clickedOnLinks)
-
-  });
+});
 
 
 //SHOW ROUTE
 app.get("/urls/:id", (req, res) => {
   //need to check if not user id
-  let userID = req.session.user_id
+  let userID = req.session.user_id;
   let shortURL = req.params.id;
-  console.log("this is the shortURL: " +shortURL);
-  console.log(urlDatabase[userID]);
-
-  if (!userID){
+  if (!userID) {
     return res.redirect("/login");
   }
-  for (url in urlDatabase[userID]){
-    console.log("this is the url: "+ url)
-    if (url === shortURL){
-      console.log(urlDatabase[userID][shortURL])
-      let userEmail = users[userID].email
-      return res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, username: userEmail, userID: userID} )
-
+  for (url in urlDatabase[userID]) {
+    if (url === shortURL) {
+      console.log(urlDatabase[userID][shortURL]);
+      let userEmail = users[userID].email;
+      return res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, username: userEmail, userID: userID} );
     }
-
   }
-
 });
 
 //DELETE ROUTE
@@ -185,9 +168,9 @@ app.get("/urls/:id/edit", (req, res) => {
     return res.redirect("/login");
   }
   if (shortURL !== urlDatabase[userID].shortURL) {
-    return res.send("This is not your URL")
+    return res.send("This is not your URL");
   }
-  res.redirect(`/urls/<%=${shortURL}`, {userID: userID})
+  res.redirect(`/urls/<%=${shortURL}`, {userID: userID});
 })
 
 //UPDATE ROUTE
@@ -210,23 +193,20 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const logInPassword = req.body.password;
   const email = req.body.email;
-  const hashedLOGINPassword = bcrypt.hashSync(logInPassword, 10)
+  const hashedLOGINPassword = bcrypt.hashSync(logInPassword, 10);
   if (email === '' || logInPassword === '') {
     return res.send('400 bad request')
   }
   for (person in users) {
     const userPass = users[person].password
-    console.log(bcrypt.compareSync(userPass, hashedLOGINPassword))
     if (users[person].email === email && bcrypt.compareSync(userPass, hashedLOGINPassword)) {
       break;
     }
-    if (users[person].email !== email){
+    if (users[person].email !== email) {
       return res.send("403: Forbidden");
-
     }
   }
   req.session.user_id = users[person].id;
-  console.log(req.session.user_id)
   return res.redirect("/");
 
 });
