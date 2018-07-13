@@ -2,10 +2,10 @@
  <div>
 
   <ul>
-    <li> <%= `${shortURL}:  ${urlDatabase[shortURL]}` %></li>
+    <li> <%= `${shortURL}:  ${urlDatabase[userID][shortURL]}` %></li>
   </ul>
 
-
+  <a href="/urls">Back To My URLS</a>
 
     <form method="POST">
       <label for="longURL">Update your URL: </label>
