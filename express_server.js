@@ -3,6 +3,8 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser')
+const bcrypt = require('bcrypt');
+
 
 app.use(cookieParser());
 
@@ -45,9 +47,6 @@ function generateRandomString() {
   return rand;
 }
 
-// function checkUserLoggedIn() {
-
-// }
 
 
 
@@ -64,7 +63,8 @@ app.get("/register", (req, res) => {
 
 //gets registration info and adds to users object
 app.post("/register", (req, res) => {
-  let password = req.body.password
+  const password = req.body.password
+  const hashedPassword = bcrypt.hashSync(password, 10);
   let email = req.body.email
   let id = generateRandomString();
   if (email === '' || password === '') {
@@ -75,7 +75,7 @@ app.post("/register", (req, res) => {
       return res.send("Bad request: 400")
     }
   }
-  users[id] = {id, email, password};
+  users[id] = {id, email, hashedPassword};
   res.cookie("user_id", users[id].id);
   res.redirect("/urls");
 
@@ -109,9 +109,12 @@ app.get("/urls/new", (req, res) => {
 
 //CREATE ROUTE
 app.post("/urls", (req, res) => {
+  let userID = req.cookies['user_id']
   let longURL = req.body.longURL;
+  console.log("longURL: " + longURL)
   let shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL
+  urlDatabase[userID][shortURL] = longURL;
+  console.log("added to database: "+ shortURL +urlDatabase[userID].shortURL)
   res.redirect('/urls/' + shortURL);
 // `urls/${shortURL}`
 });
@@ -140,16 +143,25 @@ app.get("/u/:shortURL", (req, res) => {
 
 //SHOW ROUTE
 app.get("/urls/:id", (req, res) => {
+  //need to check if not user id
   let userID = req.cookies['user_id']
   let shortURL = req.params.id;
+  console.log("this is the shortURL: " +shortURL);
+  console.log(urlDatabase[userID]);
+
   if (!userID){
     return res.redirect("/login");
   }
-  if (shortURL !== urlDatabase[userID].shortURL) {
-    return res.send("This is not your URL");
+  for (url in urlDatabase[userID]){
+    console.log("this is the url: "+ url)
+    if (url === shortURL){
+      console.log(urlDatabase[userID][shortURL])
+      let userEmail = users[userID].email
+      return res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, username: userEmail, userID: userID} )
+
+    }
+
   }
-  let userEmail = users[userID].email
-  res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, username: userEmail} )
 
 });
 
@@ -181,22 +193,24 @@ app.post("/urls/:id", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 })
 
-
+//LOGIN ROUTE
 app.get("/login", (req, res) => {
-  console.log(users)
+
   res.render("login", );
 })
 
 
 //COOKIE ROUTE
 app.post("/login", (req, res) => {
-  let password = req.body.password
-  let email = req.body.email
+  const password = req.body.password;
+  const email = req.body.email;
+  const hashedPassword = bcrypt.hashSync(password, 10)
+  console.log(hashedPassword)
   if (email === '' || password === '') {
     return res.send('400 bad request')
   }
   for (person in users) {
-    if (users[person].email === email) {
+    if (users[person].email === email && bcrypt.compareSync(password, hashedPassword)) {
       break;
     }
     if (users[person].email !== email){
