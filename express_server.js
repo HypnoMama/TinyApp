@@ -63,8 +63,9 @@ app.get("/register", (req, res) => {
 
 //gets registration info and adds to users object
 app.post("/register", (req, res) => {
-  const password = req.body.password
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  const logInPassword = req.body.password
+  const password = bcrypt.hashSync(logInPassword, 10);
+  console.log(password);
   let email = req.body.email
   let id = generateRandomString();
   if (email === '' || password === '') {
@@ -75,7 +76,7 @@ app.post("/register", (req, res) => {
       return res.send("Bad request: 400")
     }
   }
-  users[id] = {id, email, hashedPassword};
+  users[id] = {id, email, password};
   urlDatabase[id] = {};
   // req.session.user_id = users[person].id;
   req.session.user_id = users[id].id;
@@ -209,14 +210,14 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const logInPassword = req.body.password;
   const email = req.body.email;
-  const hashedPassword = bcrypt.hashSync(password, 10)
-  if (email === '' || password === '') {
+  const hashedLOGINPassword = bcrypt.hashSync(logInPassword, 10)
+  if (email === '' || logInPassword === '') {
     return res.send('400 bad request')
   }
   for (person in users) {
     const userPass = users[person].password
-    console.log(bcrypt.compareSync(userPass, hashedPassword))
-    if (users[person].email === email && bcrypt.compareSync(userPass, hashedPassword)) {
+    console.log(bcrypt.compareSync(userPass, hashedLOGINPassword))
+    if (users[person].email === email && bcrypt.compareSync(userPass, hashedLOGINPassword)) {
       break;
     }
     if (users[person].email !== email){
@@ -225,6 +226,7 @@ app.post("/login", (req, res) => {
     }
   }
   req.session.user_id = users[person].id;
+  console.log(req.session.user_id)
   return res.redirect("/");
 
 });
