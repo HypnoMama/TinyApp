@@ -9,7 +9,10 @@
             <% if (ids === userID) { %> <!--if the id is equal to the userID -->
 
                   <% for (let urls in userURLS) { %>
-                    <li><a href="<%=userURLS[urls]%>">https://localhost:8080/u/<%=urls%></a>-----><a href="<%=userURLS[urls]%>"><%=`${userURLS[urls]}`%></a></li>
+                    <li>
+                      <a href="<%=userURLS[urls]%>">http://localhost:8080/u/<%=urls%></a>
+                      ----->
+                    <a href="<%=userURLS[urls]%>"><%=userURLS[urls]%></a></li>
                     <form method="POST" action="/urls/<%=urls%>/delete">
                       <a name="clicked" href="/urls/<%=urls%>">Edit</a>
                       <button>Delete</button>
