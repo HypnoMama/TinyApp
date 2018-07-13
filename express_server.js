@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const cookieSession= require('cookie-session');
 const bcrypt = require('bcrypt');
 
-
 app.use(cookieSession({
   name: 'session',
   keys: ['user_id']
@@ -18,7 +17,8 @@ app.set("view engine", "ejs");
 
 const urlDatabase = {
   "userRandomID": {
-    "b2xVn2": "http://www.lighthouselabs.ca"
+    "b2xVn2": "http://www.lighthouselabs.ca",
+    // "linkUsed": 2
   },
   "user2RandomID": {
     "9sm5xK": "http://www.google.com"
@@ -39,15 +39,18 @@ const users = {
   }
 }
 
-//keep track of how many times the links are clicked on
-const linksUsed = 0;
-
 function generateRandomString() {
   let rand = "";
   let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < 6; i++)
     rand += possible.charAt(Math.floor(Math.random() * possible.length));
   return rand;
+}
+
+function notLoggedIn(userID) {
+  if (!userID) {
+    return true;
+  }
 }
 
 
@@ -58,8 +61,9 @@ app.get('/', (req, res) => {
 
 //register page
 app.get("/register", (req, res) => {
-  res.render("registration");
-})
+  let userID = '';
+  res.render("registration", {userID: userID});
+});
 
 //gets registration info and adds to users object
 app.post("/register", (req, res) => {
@@ -80,31 +84,35 @@ app.post("/register", (req, res) => {
   req.session.user_id = users[id].id;
   res.redirect("/urls");
 
-})
+});
 
 //INDEX ROUTE
 app.get("/urls", (req, res) => {
-  let userID = req.session.user_id;
-  if (!userID) {
+  const userID = req.session.user_id;
+  // let linkUsed = urlDatabase[userID].linkUsed;
+  // if (!linkUsed) {
+  //   linkUsed = 0;
+  // } //this is the value of linkUsed
+  // console.log(linkUsed);
+  if (notLoggedIn(userID)) {
     return res.redirect("/login");
-  } else {
+  }else {
     let userEmail = users[userID].email;
     let userURLS = urlDatabase[userID];
     res.render("urls_index", {urlDatabase: urlDatabase, userID: userID, userURLS: userURLS, userEmail: userEmail});
+
   }
 });
-
 
 
 //NEW ROUTE
 app.get("/urls/new", (req, res) => {
   let userID = req.session.user_id;
-  if (!userID) {
+  if(notLoggedIn(userID)) {
     return res.redirect("/login");
-  } else {
-    let userEmail = users[userID].email;
-    res.render("urls_new", {username: userEmail, userID: userID});
   }
+  let userEmail = users[userID].email;
+  res.render("urls_new", {userID: userID, userEmail: userEmail});
 
 });
 
@@ -114,6 +122,8 @@ app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
   urlDatabase[userID][shortURL] = longURL;
+  //keep track of how many times the link is clicked on
+  // urlDatabase[userID]['linkUsed'] = 0;
   res.redirect(`urls/${shortURL}`);
 });
 
@@ -126,8 +136,9 @@ app.get("/u/:shortURL", (req, res) => {
         continue;
       } else {
         let longURL = urlDatabase[id][url];
-        linksUsed += 1;
-        console.log(linksUsed);
+        // urlDatabase[id]['linksUsed'] = 0
+        // urlDatabase[id]['linkUsed'] = urlDatabase[id].linkUsed + 1;
+
         res.redirect(longURL);
       }
     }
@@ -137,19 +148,40 @@ app.get("/u/:shortURL", (req, res) => {
 
 //SHOW ROUTE
 app.get("/urls/:id", (req, res) => {
-  //need to check if not user id
   let userID = req.session.user_id;
   let shortURL = req.params.id;
-  if (!userID) {
-    return res.redirect("/login");
+  // let linkUsed = urlDatabase[userID].linkUsed;
+  if (notLoggedIn(userID)) {
+    return res.redirect('/login');
   }
+  let userEmail = users[userID].email;
   for (url in urlDatabase[userID]) {
     if (url === shortURL) {
-      console.log(urlDatabase[userID][shortURL]);
       let userEmail = users[userID].email;
-      return res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, username: userEmail, userID: userID} );
+      return res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, userID: userID, userEmail: userEmail} );
     }
   }
+});
+
+
+//Edit Route
+app.get("/urls/:id/edit", (req, res) => {
+  let userID = req.session.user_id;
+  let shortURL = req.params.id;
+  notLoggedIn(userID);
+  if (shortURL !== urlDatabase[userID].shortURL) {
+    return res.send("This is not your URL");
+  }
+  res.redirect(`/urls/<%=${shortURL}`, {userID: userID});
+});
+
+//UPDATE ROUTE
+app.post("/urls/:id", (req, res) => {
+  let userID = req.session.user_id;
+  let shortURL = req.params.id;
+  let longURL = req.body.longURL;
+  urlDatabase[userID][shortURL] = longURL;
+  res.redirect(`/urls/${shortURL}`);
 });
 
 //DELETE ROUTE
@@ -160,36 +192,14 @@ app.post('/urls/:id/delete', (req, res) => {
   res.redirect('/urls');
 });
 
-//Edit Route
-app.get("/urls/:id/edit", (req, res) => {
-  let userID = req.session.user_id;
-  let shortURL = req.params.id;
-  if (!userID){
-    return res.redirect("/login");
-  }
-  if (shortURL !== urlDatabase[userID].shortURL) {
-    return res.send("This is not your URL");
-  }
-  res.redirect(`/urls/<%=${shortURL}`, {userID: userID});
-})
-
-//UPDATE ROUTE
-app.post("/urls/:id", (req, res) => {
-  let userID = req.session.user_id;
-  let shortURL = req.params.id;
-  let longURL = req.body.longURL;
-  urlDatabase[userID][shortURL] = longURL;
-  res.redirect(`/urls/${shortURL}`);
-})
-
 //LOGIN ROUTE
 app.get("/login", (req, res) => {
   let userID = '';
   res.render("login", {userID: userID});
-})
+});
 
 
-//COOKIE ROUTE
+//LOGIN - SET cookie and password check
 app.post("/login", (req, res) => {
   const logInPassword = req.body.password;
   const email = req.body.email;
@@ -215,10 +225,10 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect('/login');
-})
+});
 
 
-
+//Server set up
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
