@@ -2,11 +2,14 @@ const express = require('express');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser')
+const cookieSession= require('cookie-session');
 const bcrypt = require('bcrypt');
 
 
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['user_id']
+}));
 
 app.use(bodyParser.urlencoded({extended: true}))
 
@@ -48,9 +51,6 @@ function generateRandomString() {
 }
 
 
-
-
-
 //INDEX ROUTE
 app.get('/', (req, res) => {
   res.redirect("/urls");
@@ -76,14 +76,15 @@ app.post("/register", (req, res) => {
     }
   }
   users[id] = {id, email, hashedPassword};
-  res.cookie("user_id", users[id].id);
+  // req.session.user_id = users[person].id;
+  req.session.user_id = users[id].id;
   res.redirect("/urls");
 
 })
 
 //INDEX ROUTE
 app.get("/urls", (req, res) => {
-  let userID = req.cookies['user_id']
+  let userID = req.session.user_id;
   if (!userID) {
     return res.redirect("/login");
   } else {
@@ -97,7 +98,7 @@ app.get("/urls", (req, res) => {
 
 //NEW ROUTE
 app.get("/urls/new", (req, res) => {
-  let userID = req.cookies['user_id'];
+  let userID = req.session.user_id;
   if (!userID) {
     return res.redirect("/login");
   } else {
@@ -109,7 +110,7 @@ app.get("/urls/new", (req, res) => {
 
 //CREATE ROUTE
 app.post("/urls", (req, res) => {
-  let userID = req.cookies['user_id']
+  let userID = req.session.user_id
   let longURL = req.body.longURL;
   console.log("longURL: " + longURL)
   let shortURL = generateRandomString();
@@ -144,7 +145,7 @@ app.get("/u/:shortURL", (req, res) => {
 //SHOW ROUTE
 app.get("/urls/:id", (req, res) => {
   //need to check if not user id
-  let userID = req.cookies['user_id']
+  let userID = req.session.user_id
   let shortURL = req.params.id;
   console.log("this is the shortURL: " +shortURL);
   console.log(urlDatabase[userID]);
@@ -174,7 +175,7 @@ app.post('/urls/:id/delete', (req, res) => {
 
 //Edit Route
 app.get("/urls/:id/edit", (req, res) => {
-  let userID = req.cookies['user_id']
+  let userID = req.session.user_id
   let shortURL = req.params.id;
   if (!userID){
     return res.redirect("/login");
@@ -182,7 +183,7 @@ app.get("/urls/:id/edit", (req, res) => {
   if (shortURL !== urlDatabase[userID].shortURL) {
     return res.send("This is not your URL")
   }
-  res.redirect(`/urls/<%=${shortURL}`)
+  res.redirect(`/urls/<%=${shortURL}`, {userID: userID})
 })
 
 //UPDATE ROUTE
@@ -195,8 +196,8 @@ app.post("/urls/:id", (req, res) => {
 
 //LOGIN ROUTE
 app.get("/login", (req, res) => {
-
-  res.render("login", );
+  let userID = '';
+  res.render("login", {userID: userID});
 })
 
 
@@ -205,7 +206,6 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   const email = req.body.email;
   const hashedPassword = bcrypt.hashSync(password, 10)
-  console.log(hashedPassword)
   if (email === '' || password === '') {
     return res.send('400 bad request')
   }
@@ -218,8 +218,7 @@ app.post("/login", (req, res) => {
 
     }
   }
-
-  res.cookie("user_id", users[person].id);
+  req.session.user_id = users[person].id;
   return res.redirect("/");
 
 });
