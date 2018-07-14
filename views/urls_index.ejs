@@ -13,8 +13,8 @@
                       <a href="<%=userURLS[urls]%>">http://localhost:8080/u/<%=urls%></a>
                       ----->
                     <a href="<%=userURLS[urls]%>"><%=userURLS[urls]%></a></li>
-                    <form method="POST" action="/urls/<%=urls%>/delete">
-                      <button class="btn btn-primary btn-large">
+                    <form method="POST" action="/urls/<%=urls%>?_method=DELETE">
+                      <button type="submit" class="btn btn-primary btn-large">
                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>Delete</button>
 
                       <a class="btn btn-info btn-small" name="clicked" href="/urls/<%=urls%>">Edit</a>
