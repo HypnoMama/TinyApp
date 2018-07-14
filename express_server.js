@@ -53,7 +53,7 @@ function generateRandomString() {
 function notLoggedIn(userID) {
   if (!userID) {
     return true;
-  }
+  };
 }
 
 
@@ -70,7 +70,7 @@ app.get("/register", (req, res) => {
     res.render("registration", {userID: userID});
   } else {
     res.redirect("/urls");
-  }
+  };
 
 });
 
@@ -82,12 +82,12 @@ app.post("/register", (req, res) => {
   let id = generateRandomString();
   if (email === '' || password === '') {
     return res.send('Bad request: 400');
-  }
+  };
   for (person in users) {
     if (users[person].email === email) {
       return res.send("Bad request: 400")
     }
-  }
+  };
   users[id] = {id, email, password};
   urlDatabase[id] = {};
   req.session.user_id = users[id].id;
@@ -104,7 +104,7 @@ app.get("/urls", (req, res) => {
     let userEmail = users[userID].email;
     let userURLS = urlDatabase[userID];
     res.render("urls_index", {urlDatabase: urlDatabase, userID: userID, userURLS: userURLS, userEmail: userEmail});
-  }
+  };
 });
 
 
@@ -113,15 +113,14 @@ app.get("/urls/new", (req, res) => {
   let userID = req.session.user_id;
   if(notLoggedIn(userID)) {
     return res.render("error401", {userID: userID});
-  }
+  };
   let userEmail = users[userID].email;
   res.render("urls_new", {userID: userID, userEmail: userEmail});
-
 });
 
 //CREATE ROUTE
 app.post("/urls", (req, res) => {
-  let userID = req.session.user_id
+  let userID = req.session.user_id;
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
   urlDatabase[userID][shortURL] = longURL;
@@ -156,7 +155,7 @@ app.get("/urls/:id", (req, res) => {
     if (url === shortURL) {
       let userEmail = users[userID].email;
       return res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, userID: userID, userEmail: userEmail} );
-    }
+    };
   };
   res.render("error403", {userID: userID, userEmail: userEmail});
 });
@@ -184,19 +183,16 @@ app.post("/urls/:id", (req, res) => {
     let longURL = req.body.longURL;
     urlDatabase[userID][shortURL] = longURL;
     res.redirect(`/urls/${shortURL}`);
-  }
-
+  };
 });
 
 //DELETE ROUTE
 app.delete('/urls/:id', (req, res) => {
   let userID = req.session.user_id;
   let shortURL = req.params.id;
-  console.log("userID: " + userID)
   if (notLoggedIn(userID)) {
-    return res.send("Error 403: Forbidden")
+    return res.send("Error 403: Forbidden");
   }
-  console.log(userID)
   delete urlDatabase[userID][shortURL];
   res.redirect('/urls');
 });
@@ -209,7 +205,7 @@ app.get("/login", (req, res) => {
   res.render("login", {userID: userID});
   }else {
     res.redirect("urls")
-  }
+  };
 });
 
 
