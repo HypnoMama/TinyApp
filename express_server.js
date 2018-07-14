@@ -59,15 +59,21 @@ function notLoggedIn(userID) {
 }
 
 
-//INDEX ROUTE
+//INDEX
 app.get('/', (req, res) => {
   res.redirect("/urls");
 });
 
-//register page
+//REGISTER
 app.get("/register", (req, res) => {
-  let userID = '';
-  res.render("registration", {userID: userID});
+  let userID = req.session.user_id
+  if(notLoggedIn(userID)) {
+    let userID = '';
+    res.render("registration", {userID: userID});
+  } else {
+    res.redirect("/urls");
+  }
+
 });
 
 //gets registration info and adds to users object
@@ -227,7 +233,7 @@ app.post("/login", (req, res) => {
     }
   }
   req.session.user_id = users[person].id;
-  return res.redirect("/");
+  return res.redirect("/urls");
 
 });
 
