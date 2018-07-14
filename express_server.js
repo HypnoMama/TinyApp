@@ -7,6 +7,7 @@ const cookieSession= require('cookie-session');
 const bcrypt = require('bcrypt');
 
 
+app.use(methodOverride("_method"));
 app.use(cookieSession({
   name: 'session',
   keys: ['user_id']
@@ -14,7 +15,6 @@ app.use(cookieSession({
 
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use(methodOverride("_method"));
 
 app.set("view engine", "ejs");
 
@@ -94,11 +94,6 @@ app.post("/register", (req, res) => {
 //INDEX ROUTE
 app.get("/urls", (req, res) => {
   const userID = req.session.user_id;
-  // let linkUsed = urlDatabase[userID].linkUsed;
-  // if (!linkUsed) {
-  //   linkUsed = 0;
-  // } //this is the value of linkUsed
-  // console.log(linkUsed);
   if (notLoggedIn(userID)) {
     return res.render("error401", {userID: userID});
   }else {
@@ -199,7 +194,7 @@ app.post("/urls/:id", (req, res) => {
 });
 
 //DELETE ROUTE
-app.post('/urls/:id/delete', (req, res) => {
+app.delete('/urls/:id', (req, res) => {
   let userID = req.session.user_id;
   let shortURL = req.params.id;
   console.log(shortURL)
