@@ -210,8 +210,13 @@ app.delete('/urls/:id', (req, res) => {
 
 //LOGIN ROUTE
 app.get("/login", (req, res) => {
+  let userID = req.session.user_id;
+  if (notLoggedIn(userID)) {
   let userID = '';
   res.render("login", {userID: userID});
+  }else {
+    res.redirect("urls")
+  }
 });
 
 
