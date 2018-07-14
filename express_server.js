@@ -1,9 +1,11 @@
 const express = require('express');
+const methodOverride = require('method-override');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
 const cookieSession= require('cookie-session');
 const bcrypt = require('bcrypt');
+
 
 app.use(cookieSession({
   name: 'session',
@@ -12,7 +14,10 @@ app.use(cookieSession({
 
 app.use(bodyParser.urlencoded({extended: true}));
 
+app.use(methodOverride("_method"));
+
 app.set("view engine", "ejs");
+
 
 
 const urlDatabase = {
@@ -160,9 +165,13 @@ app.get("/urls/:id", (req, res) => {
       return res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, userID: userID, userEmail: userEmail} );
     }
   }
+  for (url in urlDatabase[userID]) {
+    if (url !== urlDatabase[userID]) {
+      return res.render("error404", {userID: userID, userEmail: userEmail})
+    }
+  }
 
 });
-
 
 //Edit Route
 app.get("/urls/:id/edit", (req, res) => {
@@ -172,7 +181,7 @@ app.get("/urls/:id/edit", (req, res) => {
     return res.render("error403", {userID: userID});
   };
   if (shortURL !== urlDatabase[userID].shortURL) {
-    return res.send("This is not your URL");
+    return res.render("error403", {userID: userID});
   }
   res.redirect(`/urls/<%=${shortURL}`, {userID: userID});
 });
@@ -180,6 +189,9 @@ app.get("/urls/:id/edit", (req, res) => {
 //UPDATE ROUTE
 app.post("/urls/:id", (req, res) => {
   let userID = req.session.user_id;
+  if (notLoggedIn(userID)) {
+    res.send("Error 400: Bad Request")
+  }
   let shortURL = req.params.id;
   let longURL = req.body.longURL;
   urlDatabase[userID][shortURL] = longURL;
@@ -190,6 +202,7 @@ app.post("/urls/:id", (req, res) => {
 app.post('/urls/:id/delete', (req, res) => {
   let userID = req.session.user_id;
   let shortURL = req.params.id;
+  console.log(shortURL)
   delete urlDatabase[userID][shortURL];
   res.redirect('/urls');
 });
@@ -207,7 +220,7 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const hashedLOGINPassword = bcrypt.hashSync(logInPassword, 10);
   if (email === '' || logInPassword === '') {
-    return res.send('400 bad request')
+    return res.send('Error 400: Bad Request');
   }
   for (person in users) {
     const userPass = users[person].password
