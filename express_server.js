@@ -19,11 +19,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
 
-
 const urlDatabase = {
   "userRandomID": {
     "b2xVn2": "http://www.lighthouselabs.ca",
-    // "linkUsed": 2
   },
   "user2RandomID": {
     "9sm5xK": "http://www.google.com"
@@ -99,10 +97,10 @@ app.post("/register", (req, res) => {
 
 //INDEX ROUTE
 app.get("/urls", (req, res) => {
-  const userID = req.session.user_id;
+  let userID = req.session.user_id;
   if (notLoggedIn(userID)) {
     return res.render("error401", {userID: userID});
-  }else {
+  } else {
     let userEmail = users[userID].email;
     let userURLS = urlDatabase[userID];
     res.render("urls_index", {urlDatabase: urlDatabase, userID: userID, userURLS: userURLS, userEmail: userEmail});
@@ -127,8 +125,6 @@ app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
   urlDatabase[userID][shortURL] = longURL;
-  //keep track of how many times the link is clicked on
-  // urlDatabase[userID]['linkUsed'] = 0;
   res.redirect(`urls/${shortURL}`);
 });
 
@@ -141,9 +137,6 @@ app.get("/u/:shortURL", (req, res) => {
         continue;
       } else {
         let longURL = urlDatabase[id][url];
-        // urlDatabase[id]['linksUsed'] = 0
-        // urlDatabase[id]['linkUsed'] = urlDatabase[id].linkUsed + 1;
-
         res.redirect(longURL);
       }
     }
@@ -155,23 +148,17 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let userID = req.session.user_id;
   let shortURL = req.params.id;
-  // let linkUsed = urlDatabase[userID].linkUsed;
   if (notLoggedIn(userID)) {
     return res.render('error403', {userID: userID});
-  }
+  };
   let userEmail = users[userID].email;
   for (url in urlDatabase[userID]) {
     if (url === shortURL) {
       let userEmail = users[userID].email;
       return res.render("urls_show", {shortURL: req.params.id, urlDatabase: urlDatabase, userID: userID, userEmail: userEmail} );
     }
-  }
-  for (url in urlDatabase[userID]) {
-    if (url !== urlDatabase[userID]) {
-      return res.render("error404", {userID: userID, userEmail: userEmail})
-    }
-  }
-
+  };
+  res.render("error403", {userID: userID, userEmail: userEmail});
 });
 
 //Edit Route
@@ -180,7 +167,7 @@ app.get("/urls/:id/edit", (req, res) => {
   let shortURL = req.params.id;
   if (notLoggedIn(userID)) {
     return res.render("error403", {userID: userID});
-  };
+  }
   if (shortURL !== urlDatabase[userID].shortURL) {
     return res.render("error403", {userID: userID});
   }
@@ -205,9 +192,11 @@ app.post("/urls/:id", (req, res) => {
 app.delete('/urls/:id', (req, res) => {
   let userID = req.session.user_id;
   let shortURL = req.params.id;
-  if (notLoggedIn(userId)) {
+  console.log("userID: " + userID)
+  if (notLoggedIn(userID)) {
     return res.send("Error 403: Forbidden")
   }
+  console.log(userID)
   delete urlDatabase[userID][shortURL];
   res.redirect('/urls');
 });
