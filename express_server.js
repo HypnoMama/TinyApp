@@ -192,11 +192,13 @@ app.post("/urls/:id", (req, res) => {
   let userID = req.session.user_id;
   if (notLoggedIn(userID)) {
     res.send("Error 400: Bad Request")
+  } else {
+    let shortURL = req.params.id;
+    let longURL = req.body.longURL;
+    urlDatabase[userID][shortURL] = longURL;
+    res.redirect(`/urls/${shortURL}`);
   }
-  let shortURL = req.params.id;
-  let longURL = req.body.longURL;
-  urlDatabase[userID][shortURL] = longURL;
-  res.redirect(`/urls/${shortURL}`);
+
 });
 
 //DELETE ROUTE
