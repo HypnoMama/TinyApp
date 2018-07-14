@@ -14,10 +14,10 @@
                       ----->
                     <a href="<%=userURLS[urls]%>"><%=userURLS[urls]%></a></li>
                     <form method="POST" action="/urls/<%=urls%>?_method=DELETE">
-                      <button type="submit" class="btn btn-primary btn-large">
-                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>Delete</button>
+                      <button type="submit" class="btn btn-primary btn-large" style="margin-top: 10px;">
+                        <span style="padding-right: 5px;" class="glyphicon glyphicon-trash" aria-hidden="true"></span>Delete</button>
 
-                      <a class="btn btn-info btn-small" name="clicked" href="/urls/<%=urls%>">Edit</a>
+                      <a class="btn btn-info btn-default" style="padding-right: 13px; padding-left: 13px; margin-top: 10px;" name="clicked" href="/urls/<%=urls%>"><span style="padding-right: 5px;" class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Edit</a>
                     </form>
 
 
