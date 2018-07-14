@@ -18,7 +18,7 @@
         </div>
       <% } else { %>
           <div class="container">
-            <h1 style="color: darkblue;">Hello <%= userEmail %>!  Let's make some Tiny URLs today!</h1>
+            <h1 style="color: darkblue;">Hello <span style="color: purple; font-weight: bold;"><%= userEmail %></span>!  Let's make some Tiny URLs today!</h1>
             <div>
             <form action="/logout" method="POST">
               <input class="btn btn-danger btn-lg" type="submit" value="Logout">
