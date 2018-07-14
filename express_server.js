@@ -203,7 +203,9 @@ app.post("/urls/:id", (req, res) => {
 app.delete('/urls/:id', (req, res) => {
   let userID = req.session.user_id;
   let shortURL = req.params.id;
-  console.log(shortURL)
+  if (notLoggedIn(userId)) {
+    return res.send("Error 403: Forbidden")
+  }
   delete urlDatabase[userID][shortURL];
   res.redirect('/urls');
 });
